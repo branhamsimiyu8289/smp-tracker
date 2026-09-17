@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMP Daily Check-In</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, sans-serif;
+      --inkberry: #3b214c;
+      --peach: #ffd1b3;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--inkberry);
+      color: #e8edf5;
+    }
+
+    main {
+      width: min(90vw, 520px);
+      padding: 24px;
+      border: 1px solid #27364d;
+      border-radius: 16px;
+      background: var(--peach);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #f5a623;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--inkberry);
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #42526b;
+      border-radius: 10px;
+      background: #0f1929;
+      color: #ffffff;
+    }
+
+    button {
+      padding: 10px;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #101827;
+      background: #4ecca3;
+      font-weight: bold;
+    }
+
+    #d4result {
+      min-height: 24px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>SMP Daily Check-In</h1>
+    <form id="d4form">
+      <label>
+        Name
+        <input id="d4name" type="text" required>
+      </label>
+      <label>
+        Sleep (hours)
+        <input id="d4sleep" type="number" step="0.1" min="0" required>
+      </label>
+      <label>
+        Water (glasses)
+        <input id="d4water" type="number" min="0" required>
+      </label>
+      <label>
+        Steps
+        <input id="d4steps" type="number" min="0" required>
+      </label>
+      <button type="submit">Submit Check-In</button>
+    </form>
+    <p id="d4result" aria-live="polite"></p>
+  </main>
+
+  <script src="day39.js"></script>
+</body>
+</html>
