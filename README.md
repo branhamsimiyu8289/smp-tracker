@@ -19,12 +19,12 @@ The application provides a simple daily check-in form for a participant's name, 
 
 ```text
 ┌──────────────────────────┐
-│ main.html                │  Browser UI
+│ smpdailycheckinform.html │  Browser UI
 └────────────┬─────────────┘
              │ Loads and submits through
              ▼
 ┌──────────────────────────┐
-│ main.js                  │  Browser API client
+│ day39.js                 │  Browser API client
 └────────────┬─────────────┘
              │ HTTP :8000
              ▼
@@ -37,8 +37,8 @@ The application provides a simple daily check-in form for a participant's name, 
 
 ```text
 smp-tracker/
-├── main.html                 # Browser-based daily check-in form
-├── main.js                   # Front-end API client and form handling
+├── smpdailycheckinform.html  # Browser-based daily check-in form
+├── day39.js                  # Front-end API client and form handling
 ├── main.py                   # FastAPI application and API routes
 ├── .gitignore                # Local files excluded from Git
 └── README.md                 # Project documentation
@@ -103,7 +103,7 @@ python -m http.server 8080
 Open the application at:
 
 ```text
-http://localhost:8080/main.html
+http://127.0.0.1:8080/smpdailycheckinform.html
 ```
 
 Do not open the HTML file directly with a `file://` URL. Serving it over HTTP ensures that the browser loads the JavaScript client correctly and that requests are sent to the expected API host.
@@ -128,13 +128,13 @@ To use the tracker from another device on the same local network:
 4. On the other device, open:
 
    ```text
-  http://HOST_IP:8080/main.html
+   http://HOST_IP:8080/smpdailycheckinform.html
    ```
 
 For example:
 
 ```text
-http://192.168.1.25:8080/main.html
+http://192.168.1.25:8080/smpdailycheckinform.html
 ```
 
 Both terminal processes must remain running. If the host operating system prompts for firewall access, allow Python on a trusted private network only.
