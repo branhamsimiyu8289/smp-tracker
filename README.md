@@ -1,117 +1,234 @@
-<<<<<<< HEAD
-
-=======
 # SMP Tracker
 
-A small browser-based daily check-in app for recording a participant's name,
-sleep, water intake, and step count. The app reports whether the participant
-reached the 10,000-step goal.
+A lightweight, browser-based self-mastery tracker for recording daily wellness activities and checking progress toward a 10,000-step goal.
+
+The application provides a simple daily check-in form for a participant's name, sleep, water intake, and steps. A small FastAPI service validates and stores submissions in memory, while the browser client displays whether the step goal was achieved.
+
+> **Current status:** This is a minimal local-network application. Check-ins are held in memory and are cleared whenever the API process stops or restarts.
+
+## Features
+
+- Daily check-in form with participant name, sleep duration, water intake, and step count
+- Automatic 10,000-step goal evaluation
+- Immediate success, goal-status, and connection feedback in the browser
+- JSON API for reading and submitting check-ins
+- Local development and same-network access from another device
+- No database or build process required
+
+## Application Architecture
+
+```text
+┌──────────────────────────┐
+│ smpdailycheckinform.html │  Browser UI
+└────────────┬─────────────┘
+             │ Loads and submits through
+             ▼
+┌──────────────────────────┐
+│ day39.js                 │  Browser API client
+└────────────┬─────────────┘
+             │ HTTP :8000
+             ▼
+┌──────────────────────────┐
+│ main.py / FastAPI        │  API and in-memory storage
+└──────────────────────────┘
+```
 
 ## Project Structure
 
 ```text
 smp-tracker/
-├── smpdailycheckinform.html  # Browser form
-├── day39.js                  # Browser API client
-├── main.py                   # FastAPI backend
+├── smpdailycheckinform.html  # Browser-based daily check-in form
+├── day39.js                  # Front-end API client and form handling
+├── main.py                   # FastAPI application and API routes
+├── .gitignore                # Local files excluded from Git
 └── README.md                 # Project documentation
-```
-
-The request flow is:
-
-```text
-smpdailycheckinform.html -> day39.js -> HTTP -> main.py
 ```
 
 ## Requirements
 
-- Python 3.14 or another supported Python 3 version
+- Python 3.10 or newer recommended
 - FastAPI
 - Uvicorn
+- A modern web browser
 
-The workspace virtual environment is located one level above this folder:
+The repository does not currently include a `requirements.txt` file, so install the Python dependencies directly or add them to a project-specific dependency file:
 
-```text
-../.venv/Scripts/python.exe
+```bash
+python -m pip install fastapi uvicorn
 ```
 
-## Run the App
+## Installation
 
-Open two PowerShell terminals.
+Clone the repository and enter the project directory:
 
-In the first terminal, start the API from this folder:
+```bash
+git clone https://github.com/branhamsimiyu8289/smp-tracker.git
+cd smp-tracker
+```
+
+For a clean local setup, create and activate a virtual environment:
+
+### Windows PowerShell
 
 ```powershell
-cd "C:\Users\owenc\OneDrive\Desktop\AI-Masterclass\week8\smp-tracker"
-..\.venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8000
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install fastapi uvicorn
 ```
 
-In the second terminal, serve the browser files:
+### macOS or Linux
 
-```powershell
-cd "C:\Users\owenc\OneDrive\Desktop\AI-Masterclass\week8\smp-tracker"
-..\.venv\Scripts\python.exe -m http.server 8080
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install fastapi uvicorn
 ```
 
-Open the form at:
+## Run Locally
+
+The API and the static web page must be served separately. Start the API in one terminal:
+
+```bash
+python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+Start a static HTTP server in a second terminal from the repository directory:
+
+```bash
+python -m http.server 8080
+```
+
+Open the application at:
 
 ```text
-http://localhost:8080/smpdailycheckinform.html
+http://127.0.0.1:8080/smpdailycheckinform.html
 ```
 
-Do not open the HTML with `file://` when testing from another device. Serving
-the folder over HTTP ensures that the page and JavaScript load correctly.
+Do not open the HTML file directly with a `file://` URL. Serving it over HTTP ensures that the browser loads the JavaScript client correctly and that requests are sent to the expected API host.
 
-## Use From Another Device
+## Access From Another Device
 
-The other device must be connected to the same local network. Find the host
-computer's IPv4 address, then open this URL on the other device:
+To use the tracker from another device on the same local network:
 
-```text
-http://HOST_IP:8080/smpdailycheckinform.html
-```
+1. Start the API on all network interfaces:
+
+   ```bash
+   python -m uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+
+2. Start the static server so it is reachable on the network:
+
+   ```bash
+   python -m http.server 8080 --bind 0.0.0.0
+   ```
+
+3. Find the host computer's local IPv4 address.
+4. On the other device, open:
+
+   ```text
+   http://HOST_IP:8080/smpdailycheckinform.html
+   ```
 
 For example:
 
 ```text
-http://10.3.27.227:8080/smpdailycheckinform.html
+http://192.168.1.25:8080/smpdailycheckinform.html
 ```
 
-The API is configured to listen on all network interfaces. If Windows Firewall
-asks for permission, allow Python on private networks. The host computer must
-keep both terminal processes running.
+Both terminal processes must remain running. If the host operating system prompts for firewall access, allow Python on a trusted private network only.
 
-## API
+The JavaScript client uses the page's hostname and connects to the API on port `8000`, so the page and API should be accessed through the same host address.
+
+## API Reference
 
 ### `GET /api/checkins`
 
-Returns all check-ins stored during the current server session.
+Returns all check-ins stored during the current API process session.
 
-### `POST /api/checkins`
-
-Accepts JSON in this shape:
+Example response:
 
 ```json
-{
+[
+  {
     "name": "Alex",
     "sleep": 7.5,
     "water": 8,
-    "steps": 10500
+    "steps": 10500,
+    "hit_goal": true
+  }
+]
+```
+
+### `POST /api/checkins`
+
+Adds a check-in. Send JSON with the following fields:
+
+```json
+{
+  "name": "Alex",
+  "sleep": 7.5,
+  "water": 8,
+  "steps": 10500
 }
 ```
 
-The response includes the submitted values and a `hit_goal` field. The goal is
-met when `steps` is at least `10000`.
+The response contains the stored record and a calculated `hit_goal` field. The goal is considered achieved when `steps` is greater than or equal to `10000`.
 
-## Data Storage
+Example response:
 
-Check-ins are currently stored in the `checkins` list in memory. They are lost
-when the API process stops or restarts. A database can be added later if the
-tracker needs persistent records.
+```json
+{
+  "success": true,
+  "stored": {
+    "name": "Alex",
+    "sleep": 7.5,
+    "water": 8,
+    "steps": 10500,
+    "hit_goal": true
+  }
+}
+```
 
-## Security Note
+FastAPI also provides interactive API documentation while the API is running:
 
-The API currently allows cross-origin requests from any origin for local
-development. Restrict `allow_origins` before deploying this app outside a
-trusted local network.
->>>>>>> afd3315cedad39743e4f448e560474d518dd251c
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
+
+## Data and Validation
+
+- Data is stored in the `checkins` list in `main.py`.
+- Records are not persisted to disk or a database.
+- All records are lost when the API process restarts.
+- The API model accepts a string `name`, a numeric `sleep` value, and integer `water` and `steps` values.
+- The browser form requires all fields and validates numeric input before submission.
+- The step goal is evaluated by the backend, so API clients receive the same result as the browser form.
+
+## Security Considerations
+
+This project is intended for local development and trusted private networks, not production deployment in its current form.
+
+Before exposing it beyond a trusted network:
+
+- Replace `allow_origins=["*"]` with an explicit list of permitted web origins.
+- Add authentication and authorization if check-ins contain personal information.
+- Add persistent storage with appropriate access controls.
+- Validate business rules on the server, including sensible ranges for sleep, water, and steps.
+- Run behind HTTPS and a production-ready reverse proxy.
+- Avoid exposing Uvicorn's development setup directly to the public internet.
+- Review firewall rules and never allow broad inbound access unnecessarily.
+
+## Development Notes
+
+There is currently no automated test suite or CI workflow in the repository. When extending the project, consider adding:
+
+- API tests for successful and invalid check-ins
+- Front-end tests for form validation and error states
+- A `requirements.txt` or `pyproject.toml` for reproducible dependencies
+- Persistent storage and date-based check-in history
+- Configuration for the API URL, port, CORS origins, and step goal
+
+## License
+
+No license file is currently included. Add a license before distributing or reusing this project publicly.
