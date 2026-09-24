@@ -205,47 +205,6 @@ FastAPI also provides interactive API documentation while the API is running:
 - The browser form requires all fields and validates numeric input before submission.
 - The step goal is evaluated by the backend, so API clients receive the same result as the browser form.
 
-## Sample Output
-
-After submitting a successful check-in through the browser, the page displays:
-
-```text
-Saved Alex. Goal: HIT.
-```
-
-For a check-in with fewer than 10,000 steps, the result is:
-
-```text
-Saved Alex. Goal: MISS.
-```
-
-The API returns the stored record as JSON:
-
-```json
-{
-  "success": true,
-  "stored": {
-    "name": "Alex",
-    "sleep": 7.5,
-    "water": 8,
-    "steps": 10500,
-    "hit_goal": true
-  }
-}
-```
-
-## Learning Focus and Build Practices
-
-This project is designed to practise:
-
-- Building a simple front end with HTML, CSS, and vanilla JavaScript
-- Connecting a browser application to a FastAPI backend with `fetch`
-- Designing and validating JSON API requests and responses
-- Separating browser presentation, API client logic, and server routes
-- Using virtual environments and repeatable local setup commands
-- Handling successful submissions, validation errors, and connection failures
-- Working with Git through focused commits and clear project documentation
-
 ## Security Considerations
 
 This project is intended for local development and trusted private networks, not production deployment in its current form.
@@ -273,7 +232,3 @@ There is currently no automated test suite or CI workflow in the repository. Whe
 ## License
 
 No license file is currently included. Add a license before distributing or reusing this project publicly.
-
-## Author
-
-Branham Simiyu
